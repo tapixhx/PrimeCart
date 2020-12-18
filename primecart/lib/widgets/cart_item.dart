@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:primecart/providers/product.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';
@@ -39,14 +38,25 @@ class CartItem extends StatelessWidget {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+        elevation: 10,
+        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Padding(
           padding: EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
-              child: FittedBox(child: Text('\$$price'),),
+              child: FittedBox(child: Text(
+                '\$$price',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),),
               ),
-              title: Text('$title'),
+              title: Text(
+                '$title',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               subtitle: Text('Total: \$${(price * quantity)}'),
               trailing: Text('$quantity x'),
           ),

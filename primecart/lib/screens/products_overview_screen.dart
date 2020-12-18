@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:primecart/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/app_drawer.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
@@ -49,12 +51,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.routeName );
+                Navigator.of(context).pushNamed(CartScreen.routeName);
               },
             ),
           )
         ],
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(_showOnlyFavorites),
     );
   }
