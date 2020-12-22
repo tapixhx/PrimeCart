@@ -7,8 +7,10 @@ import './screens/orders_screen.dart';
 import './screens/product_detail_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
+import './screens/auth_screen.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
+import './providers/auth.dart';
 import './providers/orders.dart';
 void main() {
   runApp(MyApp());
@@ -18,24 +20,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
         return MultiProvider(providers: [
-          ChangeNotifierProvider(
-            create: (ctx) => Products(),
+          ChangeNotifierProvider.value(
+            value: Auth(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Products>(
+            update: (ctx, auth, prevProducts) => Products(auth.token, prevProducts == null 
+            ? [] 
+            : prevProducts.items
+          ),
           ),
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => Orders(),
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (ctx, auth, prevOrders) => Orders(auth.token, prevOrders == null 
+            ? []
+            : prevOrders.orders
+          ),
           ),
         ],
-          child: MaterialApp(
+          child: Consumer<Auth>(builder: (ctx, auth, _) => MaterialApp(
         title: 'PrimeCart',
         theme: ThemeData(
           primarySwatch: Colors.grey,
           accentColor: Colors.greenAccent,
           fontFamily: 'Montserrat',
         ),
-        home: ProductsOverviewScreen(),
+        home: auth.isAuth 
+        ? ProductsOverviewScreen() 
+        : AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName:(ctx) => CartScreen(),
@@ -43,7 +56,7 @@ class MyApp extends StatelessWidget {
           UserProductsScreen.routeName:(ctx) => UserProductsScreen(),
           EditProductScreen.routeName:(ctx) => EditProductScreen(),
         }
-      ),
+      ),)
     );
   }
 }

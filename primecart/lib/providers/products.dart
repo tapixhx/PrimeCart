@@ -99,11 +99,15 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   final url = "https://primecart-app-default-rtdb.firebaseio.com";
 
   Future<void> fetchAndSetProducts() async {
     try{
-      final response = await http.get(url + '/products.json');
+      final response = await http.get(url + '/products.json?auth=' + authToken);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if(extractedData == null) {
         return;
@@ -128,7 +132,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     try{
-      final response = await http.post(url + '/products.json', body: json.encode({
+      final response = await http.post(url + '/products.json?auth=' + authToken, body: json.encode({
         'title': product.title,
         'description': product.description,
         'imageUrl': product.imageUrl,
@@ -158,7 +162,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if(prodIndex >= 0) {
       await http.patch(
-        url + '/products/' + id + '.json',
+        url + '/products/' + id + '.json?auth=' + authToken,
         body: json.encode({
           'title': newProduct.title,
           'descripton': newProduct.description,
@@ -181,7 +185,7 @@ class Products with ChangeNotifier {
     _items.insert(existingProductIndex, existingProduct);
     notifyListeners();
     final response = await http.delete(
-      url + '/products/' + id + '.json',
+      url + '/products/' + id + '.json?auth=' + authToken,
     );
     if(response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);

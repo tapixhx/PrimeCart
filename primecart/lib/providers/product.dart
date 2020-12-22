@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import './products.dart';
-
 class Product with ChangeNotifier {
   final String id;
   final String title;
@@ -26,13 +24,15 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus() async {
+  final url = "https://primecart-app-default-rtdb.firebaseio.com";
+
+  Future<void> toggleFavoriteStatus(String token) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try{
       final response = await http.patch(
-        Products().url + '/products/' + id + '.json',
+        url + '/products/' + id + '.json?auth=' + token,
         body: json.encode({
           'isFavorite': isFavorite,
         })
