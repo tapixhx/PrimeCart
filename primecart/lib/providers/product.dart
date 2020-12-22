@@ -26,13 +26,13 @@ class Product with ChangeNotifier {
 
   final url = "https://primecart-app-default-rtdb.firebaseio.com";
 
-  Future<void> toggleFavoriteStatus(String token) async {
+  Future<void> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try{
       final response = await http.patch(
-        url + '/products/' + id + '.json?auth=' + token,
+        url + '/userFavorites/'+ userId + '/' + id + '.json?auth=' + token,
         body: json.encode({
           'isFavorite': isFavorite,
         })

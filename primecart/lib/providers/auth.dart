@@ -23,6 +23,10 @@ class Auth with ChangeNotifier {
     }
     return null;
   }
+
+  String get userId {
+    return _userId;
+  }
   // var apiKey = config.Config().key;
 
   // final url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' + apiKey;
@@ -38,6 +42,7 @@ class Auth with ChangeNotifier {
           'returnSecureToken': true,
         }),
       );
+      print(json.decode(response.body));
       final responseData = json.decode(response.body);
       if(responseData['error'] != null) {
         HttpException(responseData['error']['message']);
@@ -55,7 +60,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> signup(String email, String password) async {
-    return _authenticate(email, password, 'signInWithCustomToken');
+    return _authenticate(email, password, 'signUp');
   }
 
   Future<void> login(String email, String password) async {
