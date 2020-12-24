@@ -8,6 +8,7 @@ class Product with ChangeNotifier {
   final String description;
   final double price;
   final String imageUrl;
+  final String userId;
   bool isFavorite;
 
   Product({
@@ -16,6 +17,7 @@ class Product with ChangeNotifier {
     @required this.description,
     @required this.price,
     @required this.imageUrl,
+    @required this.userId,
     this.isFavorite = false,
   });
 
@@ -31,11 +33,11 @@ class Product with ChangeNotifier {
     isFavorite = !isFavorite;
     notifyListeners();
     try{
-      final response = await http.patch(
+      final response = await http.put(
         url + '/userFavorites/'+ userId + '/' + id + '.json?auth=' + token,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        })
+        body: json.encode(
+          isFavorite,
+        )
       );
       if(response.statusCode >= 400) {
         _setFavValue(oldStatus);

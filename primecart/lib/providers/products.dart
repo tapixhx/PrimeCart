@@ -100,18 +100,27 @@ class Products with ChangeNotifier {
   // }
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   final url = "https://primecart-app-default-rtdb.firebaseio.com";
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     try{
-      final response = await http.get(url + '/products.json?auth=' + authToken);
+      final response = await http.get(
+        'https://primecart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString'
+      );
+      // print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if(extractedData == null) {
         return;
       }
+      final favResponse = await http.get(
+        url + '/userFavorites/' + userId + '.json?auth=' + authToken,
+      );
+      final favData = json.decode(favResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -120,7 +129,10 @@ class Products with ChangeNotifier {
           description: prodData['description'],
           imageUrl: prodData['imageUrl'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favData == null 
+          ? false
+          : favData[prodId]
+          ?? false,
         ));
       });
       _items = loadedProducts;
@@ -137,7 +149,7 @@ class Products with ChangeNotifier {
         'description': product.description,
         'imageUrl': product.imageUrl,
         'price': product.price,
-        'isFavorite': product.isFavorite
+        'creatorId': userId, 
       }),
     );
     print(json.decode(response.body));
